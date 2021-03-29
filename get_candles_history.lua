@@ -6,8 +6,7 @@ function OnInit()
   for class in pairs(table_of_assets) do
     assets = utils.string_split(getClassSecurities(class))
     for _, asset in ipairs(assets) do
-      ds, Error = CreateDataSource(class, asset, INTERVAL_M1)
-      table_of_assets[class][asset]=ds
+      table.insert(table_of_assets[class], asset)
     end
   end
 end
@@ -16,12 +15,13 @@ is_run = true
 function main()
   while is_run do
     for class in pairs(table_of_assets) do
-      for asset, ds in pairs(table_of_assets[class]) do
+      for _, asset in ipairs(table_of_assets[class]) do
+        ds, Error = CreateDataSource(class, asset, INTERVAL_M1)
         ds:SetEmptyCallback()
-        while ds:Size() == 0 do sleep(1) end
-        if ds:Size() ~= 0 then
+        sleep(2)
+        if ds:Size() ~= 0 and (Error == nil or Error == '') then
           file = io.open(path..'data/prices/'..asset..'.csv', 'w')
-          file:write('open, high, low, close\n')
+          file:write('datetime, open, high, low, close\n')
           for i = 1, ds:Size() do
             candle_date = ds:T(i).year..'-'..ds:T(i).month..'-'..ds:T(i).day..' '
             candle_time = ds:T(i).hour..':'..ds:T(i).min..':'..ds:T(i).sec..','
