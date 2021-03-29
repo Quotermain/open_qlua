@@ -18,11 +18,15 @@ function main()
     for class in pairs(table_of_assets) do
       for asset, ds in pairs(table_of_assets[class]) do
         ds:SetEmptyCallback()
+        while ds:Size() == 0 do sleep(1) end
         if ds:Size() ~= 0 then
           file = io.open(path..'data/prices/'..asset..'.csv', 'w')
           file:write('open, high, low, close\n')
           for i = 1, ds:Size() do
-            line = ds:O(i)..','..ds:H(i)..','..ds:L(i)..','..ds:C(i)..'\n'
+            candle_date = ds:T(i).year..'-'..ds:T(i).month..'-'..ds:T(i).day..' '
+            candle_time = ds:T(i).hour..':'..ds:T(i).min..':'..ds:T(i).sec..','
+            OHLC = ds:O(i)..','..ds:H(i)..','..ds:L(i)..','..ds:C(i)..'\n'
+            line =candle_date..candle_time..OHLC
             file:write(line)
           end
           file:close()
