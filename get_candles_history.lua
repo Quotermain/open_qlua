@@ -2,24 +2,23 @@ local utils = require "utils"
 
 path = getScriptPath()..'/'
 table_of_assets = {['TQBR']={}, ['SPBXM']={}}
-function OnInit()
-  for class in pairs(table_of_assets) do
-    assets = utils.string_split(getClassSecurities(class))
-    for _, asset in ipairs(assets) do
-      table.insert(table_of_assets[class], asset)
-    end
-  end
-end
 
 is_run = true
 function main()
+  --Initial creating of datasources for every asset
+  for class in pairs(table_of_assets) do
+    assets = utils.string_split(getClassSecurities(class))
+    for _, asset in ipairs(assets) do
+      ds, Error = CreateDataSource(class, asset, INTERVAL_M1)
+      table_of_assets[class][asset]=ds
+      table_of_assets[class][asset]:SetEmptyCallback()
+    end
+  end
+  --Writing candles to file
   while is_run do
     for class in pairs(table_of_assets) do
-      for _, asset in ipairs(table_of_assets[class]) do
-        ds, Error = CreateDataSource(class, asset, INTERVAL_M1)
-        ds:SetEmptyCallback()
-        sleep(2)
-        if ds:Size() ~= 0 and (Error == nil or Error == '') then
+      for asset, ds in pairs(table_of_assets[class]) do
+        if ds:Size() ~= 0 then
           file = io.open(path..'data/prices/'..asset..'.csv', 'w')
           file:write('datetime, open, high, low, close\n')
           for i = 1, ds:Size() do

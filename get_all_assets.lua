@@ -1,17 +1,10 @@
-function string_split(string)
-  splitted = {}
-  for word in string.gmatch(string, '([^,]+)') do
-    table.insert(splitted, word)
-  end
-  return splitted
-end
+local utils = require "utils"
 
+file_path = getScriptPath()..'/all_assets.csv'
 
-file_path = "C:/Users/Quotermain233/Projects/open_qlua/data/all_assets.csv"
-
-asset_classes_splited = string_split(getClassesList())
+asset_classes_splited = {'TQBR', 'SPBXM'}
 for _, class in ipairs(asset_classes_splited) do
-  assets = string_split(getClassSecurities(class))
+  assets = utils.string_split(getClassSecurities(class))
   for _, asset in ipairs(assets) do
     asset_info = getSecurityInfo(class, asset)
     lot_size = asset_info.lot_size
