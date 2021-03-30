@@ -20,7 +20,7 @@ function main()
       for asset, ds in pairs(table_of_assets[class]) do
         if ds:Size() ~= 0 then
           file = io.open(path..'data/prices/'..asset..'.csv', 'w')
-          file:write('datetime, open, high, low, close\n')
+          file:write('datetime,open,high,low,close\n')
           for i = 1, ds:Size() do
             candle_date = ds:T(i).year..'-'..ds:T(i).month..'-'..ds:T(i).day..' '
             candle_time = ds:T(i).hour..':'..ds:T(i).min..':'..ds:T(i).sec..','
