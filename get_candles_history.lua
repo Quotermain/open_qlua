@@ -1,6 +1,7 @@
 local utils = require "utils"
 
 path = getScriptPath()..'/'
+--DON'T FORGET TO CHANGE FOR SPB
 table_of_assets = {['TQBR']={}, ['SPBXM']={}}
 
 is_run = true
@@ -20,12 +21,12 @@ function main()
       for asset, ds in pairs(table_of_assets[class]) do
         if ds:Size() ~= 0 then
           file = io.open(path..'data/prices/'..asset..'.csv', 'w')
-          file:write('datetime,open,high,low,close\n')
+          file:write('datetime,open,high,low,close,volume\n')
           for i = 1, ds:Size() do
             candle_date = ds:T(i).year..'-'..ds:T(i).month..'-'..ds:T(i).day..' '
             candle_time = ds:T(i).hour..':'..ds:T(i).min..':'..ds:T(i).sec..','
-            OHLC = ds:O(i)..','..ds:H(i)..','..ds:L(i)..','..ds:C(i)..'\n'
-            line =candle_date..candle_time..OHLC
+            OHLCV = ds:O(i)..','..ds:H(i)..','..ds:L(i)..','..ds:C(i)..','..ds:V(i)..'\n'
+            line =candle_date..candle_time..OHLCV
             file:write(line)
           end
           file:close()
